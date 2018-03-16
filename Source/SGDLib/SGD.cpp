@@ -38,6 +38,7 @@
 
 #include <map>
 #include <set>
+#include <unordered_set>
 
 namespace Microsoft { namespace MSR { namespace CNTK {
 
@@ -1381,9 +1382,12 @@ size_t SGD<ElemType>::TrainOneEpoch(ComputationNetworkPtr net,
 #endif
             auto smoothedGradientIter = smoothedGradients.begin();
             auto smoothedCountIter = smoothedCounts.begin();
+            unordered_set<wstring> updatedNodes = {};
             for (auto nodeIter = learnableNodes.begin(); nodeIter != learnableNodes.end(); nodeIter++, smoothedGradientIter++, smoothedCountIter++)
             {
                 ComputationNodeBasePtr node = *nodeIter;
+                if (updatedNodes.find(node->GetName()) != updatedNodes.end())
+                    continue;
                 if (node->IsParameterUpdateRequired())
                 {
 #ifdef _DEBUG
@@ -1408,6 +1412,7 @@ size_t SGD<ElemType>::TrainOneEpoch(ComputationNetworkPtr net,
                         LogicError("%ls %ls operation has NaNs in functionValues after parameter update.", node->NodeName().c_str(), node->OperationName().c_str());
 #endif
                 }
+                updatedNodes.insert(node->GetName());
             }
         }
 
