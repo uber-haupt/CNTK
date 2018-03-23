@@ -108,10 +108,13 @@ void LocalTimelineRandomizerBase::GetNextSequenceDescriptions(size_t maxSampleCo
     if (maxSampleCount > std::numeric_limits<int>::max())
         RuntimeError("The size of a minibatch cannot exceed max int.");
 
-    // The underlying randomizer should always fill data,
-    // in case it cannot we report the error.
-    if (m_window.m_sequences.empty()) 
-        RuntimeError("Could not read any data.");
+    // This randomizer operates on the local time-line. So there could be chunks with no data
+    // for all workers. In that case, we return an empty sequances.
+    if (m_window.m_sequences.empty())
+    {
+        assert(result.m_data.empty());
+        return;
+    }
 
     size_t samplesLoaded = 0;
     bool atLeastOneSequenceNeeded = true;

@@ -1012,7 +1012,14 @@ BOOST_AUTO_TEST_CASE(LTNoRandomizerMultiWorker)
 
         randomizer->StartEpoch(config);
         Sequences sequences = randomizer->GetNextSequences(1, 1);
-        BOOST_CHECK_EQUAL(sequences.m_data.size(), 1);
+        if (i < 3)
+        {
+            BOOST_CHECK_EQUAL(sequences.m_data.size(), 1);
+        }
+        else
+        {
+            BOOST_CHECK(sequences.m_data.empty());
+        }
     }
 }
 
