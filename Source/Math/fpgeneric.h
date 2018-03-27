@@ -402,6 +402,17 @@ inline curandStatus_t curandGenerateUniformHelper(curandGenerator_t, half *outpu
     return (curandStatus_t) 0;
 }
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4100) // 'identifier': unreferenced formal parameter
+#endif
+inline curandStatus_t curandGenerateUniformHelper(curandGenerator_t generator, char *outputPtr, size_t num)
+{
+    RuntimeError("Unsupported template argument(half) in GPUSparseMatrix");
+    #ifdef _MSC_VER
+    #pragma warning(default:4100)
+    #endif
+}
+
 inline curandStatus_t curandGenerateNormalHelper(curandGenerator_t generator, float *outputPtr, size_t n, float mean, float stddev)
 {
     return curandGenerateNormal(generator, outputPtr, n, mean, stddev);
@@ -423,6 +434,16 @@ inline curandStatus_t curandGenerateNormalHelper(curandGenerator_t, half *output
     return (curandStatus_t) 0;
 }
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4100) // 'identifier': unreferenced formal parameter
+#endif
+inline curandStatus_t curandGenerateNormalHelper(curandGenerator_t generator, char *outputPtr, size_t n, char mean, char stddev)
+{
+    RuntimeError("Unsupported template argument(half) in GPUSparseMatrix");
+    #ifdef _MSC_VER
+    #pragma warning(default:4100)
+    #endif
+}
 
 // cusparse
 inline cusparseStatus_t cusparsecsr2denseHelper(cusparseHandle_t handle, int m, int n, const cusparseMatDescr_t descrA, const float *csrValA, const int *csrRowPtrA, const int *csrColIndA, float *A, int lda)
