@@ -115,20 +115,19 @@ void Bundler::CreateChunkDescriptions()
                     break;
                 }
 
-                sequenceSamples = std::max<size_t>(sequenceSamples, s.m_numberOfSamples);
                 if (std::find(secondaryChunks[deserializerIndex].begin(), secondaryChunks[deserializerIndex].end(), s.m_chunkId) == secondaryChunks[deserializerIndex].end())
                     secondaryChunks[deserializerIndex].push_back(s.m_chunkId);
             }
 
             if (m_mbDefiningDeserializer != std::numeric_limits<size_t>::max())
             {
-                if (m_mbDefiningDeserializer != 0)
+                // Pick up the sequence from a particular deserializer.
+                if (m_deserializers[m_mbDefiningDeserializer]->GetSequenceInfo(sequenceDescriptions[sequenceIndex], s))
+                    sequenceSamples = s.m_numberOfSamples;
+                else
                 {
-                    // Pick up the sequence from a particular deserializer.
-                    if (m_deserializers[m_mbDefiningDeserializer]->GetSequenceInfo(sequenceDescriptions[sequenceIndex], s))
-                        sequenceSamples = s.m_numberOfSamples;
-                    else
-                        invalid.insert(sequenceIndex);
+                    invalid.insert(sequenceIndex);
+                    isValid = false;
                 }
             }
             else
@@ -136,13 +135,6 @@ void Bundler::CreateChunkDescriptions()
                 // Need to check the sequence length for all deserializers.
                 for (size_t deserializerIndex = 1; deserializerIndex < m_deserializers.size(); ++deserializerIndex)
                 {
-                    isValid = m_deserializers[deserializerIndex]->GetSequenceInfo(sequenceDescriptions[sequenceIndex], s);
-                    if (!isValid)
-                    {
-                        invalid.insert(sequenceIndex);
-                        break;
-                    }
-
                     sequenceSamples = std::max<size_t>(sequenceSamples, s.m_numberOfSamples);
                 }
             }
